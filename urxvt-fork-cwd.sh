@@ -11,14 +11,14 @@
 exec &>/dev/null
 
 ID=$(xdpyinfo | grep focus | cut -f4 -d " ")
-PID=$(xprop -id $ID | grep -m 1 PID | cut -d " " -f 3)
+PID=$(xprop -id "$ID" | grep -m 1 PID | cut -d " " -f 3)
 
 # get lowest bash child process of focused
 while [ -z "$TPID" ]
 do
   # analyze the process chain, and find deepest bash PID
-  TPID=$(pstree -g | grep $PID | grep -Po "bash\(\d+\)" | tail -1 | grep -Po "(?<=\()\d+(?=\))")
-  PID=$(pgrep -P $PID 2> /dev/null)
+  TPID=$(pstree -g | grep "$PID" | grep -Po "bash\(\d+\)" | tail -1 | grep -Po "(?<=\()\d+(?=\))")
+  PID=$(pgrep -P "$PID" 2> /dev/null)
   # if we ran out of child PIDs or some other pgrep error
   # let's break the loop
   if [ $? -ne 0 ]
@@ -31,7 +31,7 @@ done
 # else start at home like normal
 if [ -e "/proc/$TPID/cwd" ]
 then
-  urxvt -cd $(readlink /proc/$TPID/cwd) &
+  urxvt -cd "$(readlink /proc/"$TPID"/cwd)" &
 else
   urxvt &
 fi
